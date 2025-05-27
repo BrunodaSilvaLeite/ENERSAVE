@@ -6,6 +6,7 @@ import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 import { useSolarContext } from "@/context/SolarContext"
+import { calcularEnergiaSolar } from "./calculo"
 
 
 const estadosBrasil = [
@@ -50,37 +51,19 @@ export function SolarCalculator() {
     const [horasSolManual, setHorasSolManual] = useState("")
 
     const { setCalculationData } = useSolarContext();
-
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        const requestData = {
+        const resultado = calcularEnergiaSolar({
             consumoKwhMes: Number(consumoKwhMes),
             valorContaReais: Number(valorContaReais),
             localidade,
             potenciaPainelW: Number(potenciaPainelW),
             custoPorPainel: Number(custoPorPainel),
             horasSolPorDia: horasSolManual ? Number(horasSolManual) : undefined,
-        };
+        });
 
-        try {
-            const response = await fetch("http://127.0.0.1:5000/calcular", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(requestData),
-            });
-
-            if (!response.ok) {
-                throw new Error("Erro na requisição");
-            }
-
-            const data = await response.json();
-            setCalculationData(data); // Atualiza o contexto com o resultado
-        } catch (error) {
-            console.error("Erro ao calcular:", error);
-        }
+        setCalculationData(resultado);
     };
     const handleEstadoChange = (estadoSelecionado: string) => {
         setLocalidade(estadoSelecionado);

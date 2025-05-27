@@ -6,6 +6,7 @@ import type { InlineConfig } from 'vitest'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: './',
   plugins: [react()],
   resolve: {
     alias: {
